@@ -62,7 +62,13 @@ function singleBox(boxContent, boxRadRow) {
 }
 function boxClick() {
 
-    this.classList.toggle("bg-info")
+    if(this.dataset.valore !== undefined){
+        return;
+    }
+
+    this.dataset.valore = this.toString()
+
+    this.classList.add("bg-info")
     if (this.classList.contains("bg-info")) {
         console.log(this.innerHTML)
 
@@ -86,10 +92,13 @@ function gridBox(numberCell) {
     const grid = []
 
     for (let i = 1; i < numberCell; i++) {
-        
         const newBox = singleBox(i, numberCell)
+        newBox.dataset.indice = i.toString()
         grid.push(newBox)
+        console.log(newBox.dataset)
     }
+
+    console.log(grid)
 
     return grid
 }
@@ -118,7 +127,7 @@ function randomBomb() {
 
 
 // if (bombGenerator.indexOf(i) >= 0) {
-//     boxFlowers.classList.toggle("bg-danger");
+//     boxFlowers.classList.toggle("bg-danger"); //La logica dietro
 //     console.log("Hai perso")
 //     alert("Hai Perso!")
 // }
