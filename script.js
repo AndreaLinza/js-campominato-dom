@@ -6,27 +6,34 @@ const btnReset = document.getElementById("btn-reset")
 const gridContainer = document.querySelector(".grid-container")
 
 
-// creo il pulsante per giocare
+let gameOver = false
+
+
+//////////////////////////////////////// Creo il pulsante per giocare
 btnClick.addEventListener("click", onClick)
 btnReset.addEventListener("click", outClick)
 
-
-// creo la funzione del pulsante
+//////////////////////////////////////// Creo la funzione del pulsante
 function onClick() {
-    
-    const gameOver = false
-    //const bombLocation = getBombPositio(gridList,)
-    const boxCounts = parseInt(boxSelect.value)
-    const bombCount = 16
 
-    const gridList = gridBox(boxCounts)
+    gameOver = false;
+
+    gridContainer.innerHTML = ""
+
+    const boxCounts = parseInt(boxSelect.value)
+
+    const bomb = randomBomb(boxCounts)
+
+    console.log(bomb)
+
+    const gridList = gridBox(boxCounts, bomb)
+    //controlBomb(gridList)
+
 
     printContainer(gridContainer, gridList)
 
 
 }
-
-
 
 function outClick() {
 
@@ -35,15 +42,14 @@ function outClick() {
 }
 
 
-
 /**
  * 
  * @param {string} boxContent  
  * @returns 
 */
 
-//Creo la funzione per creare una singola cella 
-function singleBox(boxContent, boxRadRow) {
+///////////////////////////////////// Creo la funzione per creare una singola cella 
+function singleBox(boxContent, boxRadRow, bomb) {
     const box = document.createElement("div")
     box.classList.add("grid-box")
     box.textContent = boxContent
@@ -52,33 +58,66 @@ function singleBox(boxContent, boxRadRow) {
     //const boxForRow = Math.sqrt(boxRad) 
     box.style.flexBasis = `calc(100% / ${boxRad})`
 
-    box.addEventListener("click", boxClick)
+    if (bomb.indexOf(boxContent) >= 0){
+        box.dataset.bombs = 0;
 
+    }
 
-    //creo una funzione per rendere interagibili i box creati in precedenza
+        box.addEventListener("click", function () { //////// Grazie Pietro
+
+            if(gameOver === true){
+                return
+            }
+
+            if (box.dataset.valore !== undefined) {
+                return
+            }
+
+            this.dataset.valore = this.toString()
+
+            this.classList.add("bg-info")
+            if (this.classList.contains("bg-info")) {
+                if (box.dataset.bombs === "0") {
+                    this.classList.toggle("bg-danger")
+                    console.log("Hai perso")
+                    alert("Hai Perso!")
+                    gameOver = true
+                }
+                console.log(this.innerHTML)
+
+            } else {
+                console.log(`deselezione della cella ${this.innerHTML}`)
+            }
+        })
+
 
     return box
 
 }
-function boxClick() {
 
-    if(this.dataset.valore !== undefined){
-        return;
+///////////////////////////////// Creo la funzione per le bombe
+function randomBomb(numberBomb) {
+
+    const listBomb = []
+
+    for (let i = 1; i <= 16; i++) {
+        const bomb = Math.floor(Math.random() * numberBomb)
+
+        if (listBomb.indexOf(bomb) >= 0) {
+
+            i--
+
+        }
+        else {
+            listBomb.push(bomb)
+
+        }
+
     }
-
-    this.dataset.valore = this.toString()
-
-    this.classList.add("bg-info")
-    if (this.classList.contains("bg-info")) {
-        console.log(this.innerHTML)
-
-    } else {
-        console.log(`deselezione della cella ${this.innerHTML}`)
-    }
-
+    return listBomb
 }
 
-//Creo la funzione per calcolarmi la radice quadrata della larghezza delle box
+//////////////////////////////// Creo la funzione per calcolarmi la radice quadrata della larghezza delle box
 function radCountBox(boxRow) {
     const boxForRow = Math.sqrt(boxRow)
 
@@ -86,20 +125,16 @@ function radCountBox(boxRow) {
 }
 
 
-// Creo la grigli dove inserire le box create con la funzione singleBox
-function gridBox(numberCell) {
-
+//////////////////////////////// Creo la grigli dove inserire le box create con la funzione singleBox
+function gridBox(numberCell, bomb) {
     const grid = []
 
     for (let i = 1; i < numberCell; i++) {
-        const newBox = singleBox(i, numberCell)
+        const newBox = singleBox(i, numberCell, bomb)
         newBox.dataset.indice = i.toString()
         grid.push(newBox)
-        console.log(newBox.dataset)
+
     }
-
-    console.log(grid)
-
     return grid
 }
 
@@ -108,64 +143,10 @@ function gridBox(numberCell) {
  * Aggiunge ad un elemento html la griglia dei quadrati
  * @param {HTMLElement} container 
  * @param {HTMLDivElementElement[]} gridBox 
- */
+*/
 function printContainer(container, gridBox) {
     for (let i = 0; i < gridBox.length; i++) {
         container.append(gridBox[i])
     }
+
 }
-
-
-function randomBomb() {
-    let bombLeft = bombCount;
-
-    while (bombLeft > 0) {
-        let gridBomb = Math.floor(Math.random() * radCountBox())
-    }
-}
-
-
-
-// if (bombGenerator.indexOf(i) >= 0) {
-//     boxFlowers.classList.toggle("bg-danger"); //La logica dietro
-//     console.log("Hai perso")
-//     alert("Hai Perso!")
-// }
-
-
-
-
-// function RandomBomb(numberBomb) {
-
-//     const gridBomb = []
-
-//     for (let i = 1; i <= numberBomb; i++) {
-//         const newBomb = singleBomb(i, numberBomb)
-//         gridBomb.push(newBomb)
-
-//         console.log("ciao")
-//     }
-
-//     console.log(gridBomb)
-//     return gridBomb
-
-// }
-
-// function sigleBomb(bombContent,) {
-
-//     const box = document.createElement("div")
-//     box.classList.add("grid-box")
-//     box.textContent = boxContent
-
-//     const boxRad = radCountBox(boxRadRow)
-//     box.style.flexBasis = `calc(100% / ${boxRad})`
-
-
-//     const bomb = document.createElement("div")
-//     bomb.classList.add("grid-bomb")
-//     bomb.textContent = bombContent
-//     const bombRand = Math.floor(Math.random() * 16)
-//     bomb.style.flexBasis = `calc(100% / ${boxRad})`
-
-//     bomb
-// }
